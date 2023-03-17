@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace zgadujLiczbe
+namespace guessNumber
 {
     internal class Program
     {
@@ -9,218 +9,218 @@ namespace zgadujLiczbe
 
         static void Main(string[] args)
         {
-            int x, kroki, punktyZaKroki, punkty; // x = losowa liczba, zwrot z metody Losuj 
+            int numberToGuess, steps, stepsPoints, points; // x = losowa liczba, zwrot z metody Losuj 
                                                  // kroki = zwrot z metody DecydujKroki (liczba zadeklarowanych kroków) 
                                                  // punktyZaKroki = zwrot z metody DecydujPunkty (liczba dodatkowych punktów =100/kroki
                                                  // punkty = zwrot z metody Wynik (suma punktów)
-            int[] wynikiTab = new int[2];        // zwrot z metody Zgaduj (indeks 0 = liczba wykonanych kroków,indeks 1 = wygrana (1) lub przegrana (0)
-            bool jeszczeRaz=false;              
-            string nowaGra;                      
+            int[] resultTable = new int[2];        // zwrot z metody Zgaduj (indeks 0 = liczba wykonanych kroków,indeks 1 = wygrana (1) lub przegrana (0)
+            bool onceAgain=false;
+            string newGame;                      
             
-            UtworzRanking();                    // tworzy plik rankingu top5 ranking.txt jeżeli nie istnieje i wpisuje 5 linii z zerami
+            CreateRanking();                    // tworzy plik rankingu top5 ranking.txt jeżeli nie istnieje i wpisuje 5 linii z zerami
 
             Console.WriteLine("PROGRAM WYLOSOWAŁ LICZBĘ Z ZAKRESU 0-99. SPRÓBUJ JĄ ODGADNĄĆ.");
             
             do
             {
-                x = Losuj();
+                numberToGuess = Randomize();
                 Console.WriteLine();
-                kroki = DecydujKroki();
-                punktyZaKroki = DecydujPunkty(kroki);
-                wynikiTab = Zgaduj(x, kroki);
-                if (wynikiTab[1] == 1)
+                steps = DecideSteps();
+                stepsPoints = DecidePoints(steps);
+                resultTable = Guess(numberToGuess, steps);
+                if (resultTable[1] == 1)
                 {
-                    punkty = Wynik(punktyZaKroki, wynikiTab[0]);
-                    Ranking(punkty);
+                    points = Result(stepsPoints, resultTable[0]);
+                    Ranking(points);
                 }
                 else
                 {
                     Console.WriteLine();
-                    Console.WriteLine($"NIE UDAŁO CI SIĘ ODGADNĄĆ LICZBY {x}. SPRÓBUJ JESZCZE RAZ");
+                    Console.WriteLine($"NIE UDAŁO CI SIĘ ODGADNĄĆ LICZBY {numberToGuess}. SPRÓBUJ JESZCZE RAZ");
                 }
                 Console.WriteLine();
                 Console.WriteLine("CZY CHCESZ ZAGRAĆ JESZCZE RAZ ? (T)AK, (R)ANKING");
-                nowaGra = Console.ReadLine();
-                if (nowaGra == "R" || nowaGra == "r")
+                newGame = Console.ReadLine();
+                if (newGame == "R" || newGame == "r")
                 {
                     Console.WriteLine();
-                    PokazRanking();
+                    ShowRanking();
                     Console.WriteLine();
                     Console.WriteLine("CZY CHCESZ ZAGRAĆ JESZCZE RAZ ? (T)AK");
-                    nowaGra = Console.ReadLine();
-                    if (nowaGra == "T" || nowaGra == "t")
+                    newGame = Console.ReadLine();
+                    if (newGame == "T" || newGame == "t")
                     {
-                        jeszczeRaz = true;
+                        onceAgain = true;
                         Console.Clear();
                     }
                     else
                     {
-                        jeszczeRaz = false;
+                        onceAgain = false;
                         Console.WriteLine("DZIĘKI ZA GRĘ.");
                     }
                 }
-                else if (nowaGra == "T" || nowaGra == "t")
+                else if (newGame == "T" || newGame == "t")
                 {
-                    jeszczeRaz = true;
+                    onceAgain = true;
                     Console.Clear();
                 }
                 else
                 {
-                    jeszczeRaz = false;
+                    onceAgain = false;
                     Console.WriteLine("DZIĘKI ZA GRĘ.");
                 }
             }
-            while (jeszczeRaz == true);
+            while (onceAgain == true);
         }
 
         
-        static int Losuj()
+        static int Randomize()
         {
-            int x;
+            int randomNumber;
             Random random = new Random();
-            x = random.Next(0, 100);
-            return x;
+            randomNumber = random.Next(0, 100);
+            return randomNumber;
         }
 
-        static int DecydujKroki()
+        static int DecideSteps()
         {
-            int decydujKroki = -1; // ???
-            bool zleKroki = false;
+            int decideSteps = -1; // ???
+            bool incorrectSteps = false;
 
             Console.WriteLine("ZADEKLARUJ MAKSYMALNĄ LICZBĘ KROKÓW, W JAKIEJ POSTARASZ SIĘ ODGADNĄĆ LICZBĘ.\nUZYSKASZ ZA TO DODATKOWE PUNKTY (100/liczba kroków).");
             do
             {
                 try
                 {
-                    decydujKroki = int.Parse(Console.ReadLine());
-                    zleKroki = false;
+                    decideSteps = int.Parse(Console.ReadLine());
+                    incorrectSteps = false;
                 }
                 catch
                 {
                     Console.WriteLine("WPROWADŹ LICZBĘ CAŁKOWITĄ <1-100>.");
-                    zleKroki = true;
+                    incorrectSteps = true;
                     continue;
                 }
 
-                if (decydujKroki < 1 || decydujKroki > 100)
+                if (decideSteps < 1 || decideSteps > 100)
                 {
                     Console.WriteLine("WPROWADŹ POPRAWNĄ LICZBĘ <1-100>.");
-                    zleKroki = true;
+                    incorrectSteps = true;
                 }
              }
-            while (zleKroki == true);
+            while (incorrectSteps == true);
 
-            return decydujKroki;
+            return decideSteps;
         }
                       
-        static int DecydujPunkty(int decydujKroki)
+        static int DecidePoints(int decideSteps)
         {          
-            int decydujPunkty;
-            decydujPunkty = 100 / decydujKroki;
+            int decidePoints;
+            decidePoints = 100 / decideSteps;
          
-            if (decydujPunkty == 1)
+            if (decidePoints == 1)
             {
-                Console.WriteLine($"DODATKOWO OTRZYMASZ {decydujPunkty} PUNKT." );
+                Console.WriteLine($"DODATKOWO OTRZYMASZ {decidePoints} PUNKT." );
             }
-            else if (decydujPunkty == 12 || decydujPunkty == 13 || decydujPunkty == 14)
+            else if (decidePoints == 12 || decidePoints == 13 || decidePoints == 14)
             {
-                Console.WriteLine($"DODATKOWO OTRZYMASZ {decydujPunkty} PUNKTÓW.");
+                Console.WriteLine($"DODATKOWO OTRZYMASZ {decidePoints} PUNKTÓW.");
             }
-            else if (decydujPunkty % 10 == 2 || decydujPunkty % 10 == 3 || decydujPunkty % 10 == 4)
+            else if (decidePoints % 10 == 2 || decidePoints % 10 == 3 || decidePoints % 10 == 4)
             {
-                Console.WriteLine($"DODATKOWO OTRZYMASZ {decydujPunkty} PUNKTY.");
+                Console.WriteLine($"DODATKOWO OTRZYMASZ {decidePoints} PUNKTY.");
             }
-            else Console.WriteLine($"DODATKOWO OTRZYMASZ {decydujPunkty} PUNKTÓW.");
+            else Console.WriteLine($"DODATKOWO OTRZYMASZ {decidePoints} PUNKTÓW.");
 
             Console.WriteLine();
 
-            if (decydujKroki % 10 == 1)
+            if (decideSteps % 10 == 1)
             {
-                Console.WriteLine($"MASZ {decydujKroki} PRÓBĘ. ZACZYNAMY.");
+                Console.WriteLine($"MASZ {decideSteps} PRÓBĘ. ZACZYNAMY.");
             }
-            else if (decydujKroki == 12 || decydujKroki == 13 || decydujKroki == 14)
+            else if (decideSteps == 12 || decideSteps == 13 || decideSteps == 14)
             {
-                Console.WriteLine($"MASZ {decydujKroki} PRÓB. ZACZYNAMY.");
+                Console.WriteLine($"MASZ {decideSteps} PRÓB. ZACZYNAMY.");
             }
-            else if (decydujKroki % 10 == 2 || decydujKroki % 10 == 3 || decydujKroki % 10 == 4)
+            else if (decideSteps % 10 == 2 || decideSteps % 10 == 3 || decideSteps % 10 == 4)
             {
-                Console.WriteLine($"MASZ {decydujKroki} PRÓBY. ZACZYNAMY.");
+                Console.WriteLine($"MASZ {decideSteps} PRÓBY. ZACZYNAMY.");
             }
-            else Console.WriteLine($"MASZ {decydujKroki} PRÓB. ZACZYNAMY.");
+            else Console.WriteLine($"MASZ {decideSteps} PRÓB. ZACZYNAMY.");
 
-            return decydujPunkty;
+            return decidePoints;
         }
 
-        static int[] Zgaduj(int x, int decydujKroki)
+        static int[] Guess(int numberToGuess, int decideSteps)
         {
-            int strzal=-1; // ???
-            int krok, wygrana = 0; // 0 = przegrana, 1=wygrana
-            int[] wynik = new int[2];
-            bool zlyStrzal = false;
-            for (krok = 1; krok<= decydujKroki; krok++)
+            int attempt=-1; // ???
+            int step, win = 0; // 0 = przegrana, 1=wygrana
+            int[] result = new int[2];
+            bool wrongAttempt = false;
+            for (step = 1; step <= decideSteps; step++)
             {
 
                 do
                 {
-                    Console.Write($"PRÓBA {krok}: ");
+                    Console.Write($"PRÓBA {step}: ");
                     try
                     {
-                        strzal = int.Parse(Console.ReadLine());
-                        zlyStrzal = false;
+                        attempt = int.Parse(Console.ReadLine());
+                        wrongAttempt = false;
                     }
                     catch
                     {
                         Console.WriteLine("WPROWADŹ LICZBĘ CAŁKOWITĄ <0-99>.");
-                        zlyStrzal = true;
+                        wrongAttempt = true;
                         continue;
                     }
-                    if (strzal < 0 || strzal > 99)
+                    if (attempt < 0 || attempt > 99)
                     {
                         Console.WriteLine("WPROWADŹ POPRAWNĄ LICZBĘ <0-99>.");
-                        zlyStrzal = true;
+                        wrongAttempt = true;
                     }
                 }
-                while (zlyStrzal == true);
+                while (wrongAttempt == true);
 
-                if (strzal == x)
+                if (attempt == numberToGuess)
                 {
                     Console.WriteLine();
-                    Console.WriteLine($"ZGADŁEŚ. WYLOSOWANA LICZBA TO {x}.");
-                    wygrana = 1;
+                    Console.WriteLine($"ZGADŁEŚ. WYLOSOWANA LICZBA TO {numberToGuess}.");
+                    win = 1;
                     break;
                 }
                 else
                 {
-                    if (strzal > x)
+                    if (attempt > numberToGuess)
                     {
                         Console.WriteLine("ZŁY STRZAŁ. WYLOSOWANA LICZBA JEST MNIEJSZA.");
                     }
                     else Console.WriteLine("ZŁY STRZAŁ. WYLOSOWANA LICZBA JEST WIĘKSZA.");
                 }
             }
-                wynik[0] = krok;
-                wynik[1] = wygrana;
+                result[0] = step;
+                result[1] = win;
 
-            return wynik;
+            return result;
         }
-        static int Wynik(int decydujPunkty, int zgadujKrok)
+        static int Result(int decidePoints, int noOfSteps)
         {
-            int punkty, punktyZaSzybkosc;
-            if (zgadujKrok <= 10)
+            int totalPoints, speedPoints;
+            if (noOfSteps <= 10)
             {
-                punktyZaSzybkosc = 11 - zgadujKrok;
+                speedPoints = 11 - noOfSteps;
             } 
-            else punktyZaSzybkosc = 0;
-            punkty = 10 + decydujPunkty + punktyZaSzybkosc;
+            else speedPoints = 0;
+            totalPoints = 10 + decidePoints + speedPoints;
             Console.WriteLine();
             Console.WriteLine("PUNKTY ZA ODGADNIĘCIE\t10.");
-            Console.WriteLine($"PUNKTY DODATKOWE\t{decydujPunkty}.");
-            Console.WriteLine($"PUNKTY ZA SZYBKOŚĆ\t{punktyZaSzybkosc}.");
-            Console.WriteLine($"RAZEM\t{punkty}.");
+            Console.WriteLine($"PUNKTY DODATKOWE\t{decidePoints}.");
+            Console.WriteLine($"PUNKTY ZA SZYBKOŚĆ\t{speedPoints}.");
+            Console.WriteLine($"RAZEM\t{totalPoints}.");
 
-            return punkty;
+            return totalPoints;
         }
-        static void UtworzRanking()
+        static void CreateRanking()
         {
             int i = 0;
 
@@ -237,64 +237,63 @@ namespace zgadujLiczbe
                 fs.Close();
             }
 
-            foreach (string linia in File.ReadLines("ranking.txt"))
+            foreach (string line in File.ReadLines("ranking.txt"))
             {
-                top5[i] = linia;
+                top5[i] = line;
                 i++;
             }
 
         }
 
-        static void Ranking(int wynikPunkty)
+        static void Ranking(int totalPoints)
         {
             int l = 0;
                    
             Console.WriteLine();
 
-            if (wynikPunkty <= int.Parse(top5[4]))
+            if (totalPoints <= int.Parse(top5[4]))
             {
                 Console.WriteLine("TWÓJ WYNIK NIE JEST W TOP5.");
             }
-            else if (wynikPunkty > int.Parse(top5[0]))
+            else if (totalPoints > int.Parse(top5[0]))
             {
                 top5[4] = top5[3];
                 top5[3] = top5[2];
                 top5[2] = top5[1];
                 top5[1] = top5[0];
-                top5[0] = wynikPunkty.ToString();
+                top5[0] = totalPoints.ToString();
                 Console.WriteLine($"TWÓJ WYNIK JEST W TOP5 NA 1 MIEJSCU.");
             }
             else
             {
                 for (int j = 3; j >= 0; j--)
                 {
-                    if (wynikPunkty <= int.Parse(top5[j]))
+                    if (totalPoints <= int.Parse(top5[j]))
                     {
                         switch (j)
                         {
                             case 3:
-                                top5[j + 1] = wynikPunkty.ToString();
+                                top5[j + 1] = totalPoints.ToString();
                                 Console.WriteLine($"TWÓJ WYNIK JEST W TOP5 NA {j + 2} MIEJSCU.");
                                 break;
                             case 2:
                                 top5[j + 2] = top5[j + 1];
-                                top5[j + 1] = wynikPunkty.ToString();
+                                top5[j + 1] = totalPoints.ToString();
                                 Console.WriteLine($"TWÓJ WYNIK JEST W TOP5 NA {j + 2} MIEJSCU.");
                                 break;
                             case 1:
                                 top5[j + 3] = top5[j + 2];
                                 top5[j + 2] = top5[j + 1];
-                                top5[j + 1] = wynikPunkty.ToString();
+                                top5[j + 1] = totalPoints.ToString();
                                 Console.WriteLine($"TWÓJ WYNIK JEST W TOP5 NA {j + 2} MIEJSCU.");
                                 break;
                             case 0:
                                 top5[j + 4] = top5[j + 3];
                                 top5[j + 3] = top5[j + 2];
                                 top5[j + 2] = top5[j + 1];
-                                top5[j + 1] = wynikPunkty.ToString();
+                                top5[j + 1] = totalPoints.ToString();
                                 Console.WriteLine($"TWÓJ WYNIK JEST W TOP5 NA {j + 2} MIEJSCU.");
                                 break;
-
                         }
                         break;
 
@@ -313,21 +312,21 @@ namespace zgadujLiczbe
 
             Console.WriteLine();
 
-            foreach (string linia in File.ReadLines("ranking.txt"))
+            foreach (string line in File.ReadLines("ranking.txt"))
             {
-                top5[l] = linia;
+                top5[l] = line;
                 Console.WriteLine(top5[l]);
                 l++;
             }
 
         }
 
-        static void PokazRanking()
+        static void ShowRanking()
         {
             int l = 0;
-            foreach (string linia in File.ReadLines("ranking.txt"))
+            foreach (string line in File.ReadLines("ranking.txt"))
             {
-                Console.WriteLine(linia);
+                Console.WriteLine(line);
                 l++;
             }
         }
